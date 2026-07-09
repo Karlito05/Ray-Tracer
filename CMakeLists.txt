@@ -7,7 +7,7 @@ add_executable(RayTracer)
 target_sources(RayTracer
 PRIVATE
 src/main.cpp
-src/vec3.cpp
-src/color.cpp
-src/ray.cpp
+src/math/vec3.cpp
+src/math/color.cpp
+src/math/ray.cpp
 )
