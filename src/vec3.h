@@ -27,7 +27,6 @@ public:
   double length() const;
   double length_squared() const;
 
-private:
   std::array<double, 3> e;
 };
 
