@@ -2,6 +2,7 @@
 #include "hittables/hittable_list.h"
 #include "hittables/sphere.h"
 #include "math/color.h"
+#include "math/interval.h"
 #include "math/vec3.h"
 #include "utils.h"
 #include <fstream>
@@ -22,7 +23,7 @@ constexpr double FOCAL_LENGTH{1.0};
 
 color ray_color(const ray &r, const hittable &world) {
   hit_record rec;
-  if (world.hit(r, 0, infinity, rec)) {
+  if (world.hit(r, interval(0, infinity), rec)) {
     return 0.5 * (rec.normal + color{1, 1, 1});
   }
 

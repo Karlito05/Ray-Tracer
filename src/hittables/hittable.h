@@ -1,4 +1,5 @@
 #pragma once
+#include "../math/interval.h"
 #include "../math/ray.h"
 #include "../math/vec3.h"
 
@@ -16,6 +17,5 @@ class hittable {
 public:
   virtual ~hittable() = default;
 
-  virtual bool hit(const ray &r, double ray_tmin, double ray_tmax,
-                   hit_record &rec) const = 0;
+  virtual bool hit(const ray &r, interval ray_t, hit_record &rec) const = 0;
 };

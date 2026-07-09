@@ -11,6 +11,7 @@ src/main.cpp
 src/math/vec3.cpp
 src/math/color.cpp
 src/math/ray.cpp
+src/math/interval.cpp
 
 src/hittables/hittable.cpp
 src/hittables/sphere.cpp
