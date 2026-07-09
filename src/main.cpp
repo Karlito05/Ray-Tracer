@@ -27,7 +27,7 @@ bool hit_sphere(const point3 &center, double radius, const ray &r) {
 }
 
 color ray_color(const ray &r) {
-  if (hit_sphere({0, 0, 5}, 3, r))
+  if (hit_sphere({0, 0, -5}, 3, r))
     return {1, 0, 0};
 
   vec3 unit_direction = unit_vector(r.direction());
