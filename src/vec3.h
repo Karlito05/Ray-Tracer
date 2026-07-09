@@ -6,8 +6,6 @@
 
 class vec3 {
 public:
-  std::array<double, 3> e;
-
   double x() const { return e[0]; }
   double y() const { return e[1]; }
   double z() const { return e[2]; }
@@ -28,7 +26,12 @@ public:
 
   double length() const;
   double length_squared() const;
+
+private:
+  std::array<double, 3> e;
 };
+
+using point3 = vec3;
 
 std::ostream &operator<<(std::ostream &out, const vec3 &v);
 

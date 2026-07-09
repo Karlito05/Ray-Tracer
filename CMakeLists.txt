@@ -9,4 +9,5 @@ PRIVATE
 src/main.cpp
 src/vec3.cpp
 src/color.cpp
+src/ray.cpp
 )
