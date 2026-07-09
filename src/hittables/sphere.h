@@ -1,5 +1,4 @@
 
-#include "../math/vec3.h"
 #include "hittable.h"
 
 class sphere : public hittable {

@@ -1,9 +1,12 @@
+#include "hittables/hittable.h"
+#include "hittables/hittable_list.h"
+#include "hittables/sphere.h"
 #include "math/color.h"
-#include "math/ray.h"
 #include "math/vec3.h"
-#include <cmath>
+#include "utils.h"
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
 
 const std::string FILENAME{"Render.ppm"};
@@ -17,25 +20,10 @@ constexpr double VIEWPORT_WIDTH{
     VIEWPORT_HEIGHT * (static_cast<double>(IMAGE_WIDTH) / IMAGE_HEIGHT)};
 constexpr double FOCAL_LENGTH{1.0};
 
-double hit_sphere(const point3 &center, double radius, const ray &r) {
-  vec3 oc = center - r.origin();
-  auto a = dot(r.direction(), r.direction());
-  auto h = dot(r.direction(), oc);
-  auto c = dot(oc, oc) - radius * radius;
-  auto discriminant = h * h - a * c;
-
-  if (discriminant < 0) {
-    return -1.0;
-  } else {
-    return (h - std::sqrt(discriminant)) / a;
-  }
-}
-
-color ray_color(const ray &r) {
-  auto t = hit_sphere({0, 0, -1}, 0.5, r);
-  if (t > 0.0) {
-    vec3 N = unit_vector(r.at(t) - vec3(0, 0, -1));
-    return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1);
+color ray_color(const ray &r, const hittable &world) {
+  hit_record rec;
+  if (world.hit(r, 0, infinity, rec)) {
+    return 0.5 * (rec.normal + color{1, 1, 1});
   }
 
   vec3 unit_direction = unit_vector(r.direction());
@@ -44,6 +32,12 @@ color ray_color(const ray &r) {
 }
 
 int main() {
+
+  hittable_list world;
+
+  world.add(std::make_shared<sphere>(point3{0, 0, -1}, 0.5));
+  world.add(make_shared<sphere>(point3{0, -100.5, -1}, 100));
+
   const point3 camera_center{0, 0, 0};
 
   const vec3 viewport_u{VIEWPORT_WIDTH, 0, 0};
@@ -68,7 +62,7 @@ int main() {
       auto ray_direction = pixel_center - camera_center;
       ray r(camera_center, ray_direction);
 
-      color pixel_color = ray_color(r);
+      color pixel_color = ray_color(r, world);
       write_color(file, pixel_color);
     }
   }
