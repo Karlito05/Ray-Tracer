@@ -15,6 +15,8 @@ public:
 
   bool surrounds(double x) const { return min < x && x < max; }
 
+  double clamp(double x) const;
+
   static const interval empty, universe;
 };
 
