@@ -27,6 +27,7 @@ public:
 
   double length() const;
   double length_squared() const;
+  bool near_zero() const;
 
   static vec3 random();
 
@@ -58,5 +59,7 @@ vec3 cross(const vec3 &u, const vec3 &v);
 vec3 random_unit_vector();
 
 vec3 random_on_hemisphere(const vec3 &normal);
+
+vec3 reflect(const vec3 &v, const vec3 &n);
 
 double dot(const vec3 &u, const vec3 &v);

@@ -2,11 +2,15 @@
 #include "../math/interval.h"
 #include "../math/ray.h"
 #include "../math/vec3.h"
+#include <memory>
+
+class material;
 
 class hit_record {
 public:
   point3 p;
   vec3 normal;
+  std::shared_ptr<material> mat;
   double t;
   bool front_face;
 

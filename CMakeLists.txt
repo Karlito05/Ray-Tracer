@@ -17,4 +17,6 @@ src/math/interval.cpp
 src/hittables/hittable.cpp
 src/hittables/sphere.cpp
 src/hittables/hittable_list.cpp
+
+src/materials/material.cpp
 )
