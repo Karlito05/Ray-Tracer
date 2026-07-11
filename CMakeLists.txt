@@ -20,13 +20,13 @@ src/hittables/hittable_list.cpp
 
 src/materials/material.cpp
 
-src/imgui_impl_glfw.cpp
-src/imgui_impl_vulkan.cpp
-src/imgui.cpp
-src/imgui_tables.cpp
-src/imgui_widgets.cpp
-src/imgui_draw.cpp
-src/imgui_demo.cpp
+src/imgui/imgui_impl_glfw.cpp
+src/imgui/imgui_impl_vulkan.cpp
+src/imgui/imgui.cpp
+src/imgui/imgui_tables.cpp
+src/imgui/imgui_widgets.cpp
+src/imgui/imgui_draw.cpp
+src/imgui/imgui_demo.cpp
 )
 
 target_link_libraries(RayTracer glfw vulkan)
