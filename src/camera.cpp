@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "math/vec3.h"
 #include <fstream>
 void camera::render(const hittable &world) {
   camera::initialize();
@@ -59,8 +60,8 @@ color camera::ray_color(const ray &r, int depth, const hittable &world) const {
 
   hit_record rec;
 
-  if (world.hit(r, interval(0, infinity), rec)) {
-    vec3 direction = random_on_hemisphere(rec.normal);
+  if (world.hit(r, interval(0.001, infinity), rec)) {
+    vec3 direction = rec.normal + random_unit_vector();
     return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
   }
 
