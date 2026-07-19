@@ -34,16 +34,17 @@ private:
   vec3 defocus_disk_u;        // Defocus disk horizontal radius
   vec3 defocus_disk_v;        // Defocus disk vertical radius
 
-  std::vector<vec3> render_thread(const hittable &world, int start,
-                                  int end) const;
+  [[nodiscard]] auto render_thread(const hittable &world, int start,
+                                   int end) const -> std::vector<vec3>;
 
   void initialize();
 
-  color ray_color(const ray &r, int depth, const hittable &world) const;
+  [[nodiscard]] auto ray_color(const ray &r, int depth,
+                               const hittable &world) const -> color;
 
-  ray get_ray(int i, int j) const;
+  [[nodiscard]] auto get_ray(int i, int j) const -> ray;
 
-  vec3 sample_square() const;
+  [[nodiscard]] auto sample_square() const -> vec3;
 
-  point3 defocus_disk_sample() const;
+  [[nodiscard]] auto defocus_disk_sample() const -> point3;
 };

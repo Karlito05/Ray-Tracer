@@ -1,9 +1,11 @@
 #include "interval.h"
 
-double interval::clamp(double x) const {
-  if (x < min)
+auto interval::clamp(double x) const -> double {
+  if (x < min) {
     return min;
-  if (x > max)
+}
+  if (x > max) {
     return max;
+}
   return x;
 }

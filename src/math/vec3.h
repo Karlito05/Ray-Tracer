@@ -5,63 +5,63 @@
 
 class vec3 {
 public:
-  double x() const { return e[0]; }
-  double y() const { return e[1]; }
-  double z() const { return e[2]; }
+  [[nodiscard]] auto x() const -> double { return e[0]; }
+  [[nodiscard]] auto y() const -> double { return e[1]; }
+  [[nodiscard]] auto z() const -> double { return e[2]; }
 
-  double r() const { return e[0]; }
-  double g() const { return e[1]; }
-  double b() const { return e[2]; }
+  [[nodiscard]] auto r() const -> double { return e[0]; }
+  [[nodiscard]] auto g() const -> double { return e[1]; }
+  [[nodiscard]] auto b() const -> double { return e[2]; }
 
   vec3() : e{0, 0, 0} {}
   vec3(double e1, double e2, double e3) : e{e1, e2, e3} {}
 
-  vec3 operator-() const;
-  vec3 &operator+=(const vec3 &v);
-  vec3 &operator*=(double t);
-  vec3 &operator/=(double t);
-  double operator[](std::size_t i) const;
-  double &operator[](std::size_t i);
+  auto operator-() const -> vec3;
+  auto operator+=(const vec3 &v) -> vec3 &;
+  auto operator*=(double t) -> vec3 &;
+  auto operator/=(double t) -> vec3 &;
+  auto operator[](std::size_t i) const -> double;
+  auto operator[](std::size_t i) -> double &;
 
-  double length() const;
-  double length_squared() const;
-  bool near_zero() const;
+  [[nodiscard]] auto length() const -> double;
+  [[nodiscard]] auto length_squared() const -> double;
+  [[nodiscard]] auto near_zero() const -> bool;
 
-  static vec3 random();
+  static auto random() -> vec3;
 
-  static vec3 random(double min, double max);
+  static auto random(double min, double max) -> vec3;
 
   std::array<double, 3> e;
 };
 
 using point3 = vec3;
 
-std::ostream &operator<<(std::ostream &out, const vec3 &v);
+auto operator<<(std::ostream &out, const vec3 &v) -> std::ostream &;
 
-vec3 operator+(const vec3 &u, const vec3 &v);
+auto operator+(const vec3 &u, const vec3 &v) -> vec3;
 
-vec3 operator-(const vec3 &u, const vec3 &v);
+auto operator-(const vec3 &u, const vec3 &v) -> vec3;
 
-vec3 operator*(const vec3 &u, const vec3 &v);
+auto operator*(const vec3 &u, const vec3 &v) -> vec3;
 
-vec3 operator*(double t, const vec3 &v);
+auto operator*(double t, const vec3 &v) -> vec3;
 
-vec3 operator*(const vec3 &v, double t);
+auto operator*(const vec3 &v, double t) -> vec3;
 
-vec3 operator/(const vec3 &v, double t);
+auto operator/(const vec3 &v, double t) -> vec3;
 
-vec3 unit_vector(const vec3 &v);
+auto unit_vector(const vec3 &v) -> vec3;
 
-vec3 cross(const vec3 &u, const vec3 &v);
+auto cross(const vec3 &u, const vec3 &v) -> vec3;
 
-vec3 random_unit_vector();
+auto random_unit_vector() -> vec3;
 
-vec3 random_on_hemisphere(const vec3 &normal);
+auto random_on_hemisphere(const vec3 &normal) -> vec3;
 
-vec3 random_in_unit_disk();
+auto random_in_unit_disk() -> vec3;
 
-vec3 reflect(const vec3 &v, const vec3 &n);
+auto reflect(const vec3 &v, const vec3 &n) -> vec3;
 
-vec3 refract(const vec3 &uv, const vec3 &n, double etai_over_etat);
+auto refract(const vec3 &uv, const vec3 &n, double etai_over_etat) -> vec3;
 
-double dot(const vec3 &u, const vec3 &v);
+auto dot(const vec3 &u, const vec3 &v) -> double;

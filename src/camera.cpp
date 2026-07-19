@@ -1,13 +1,12 @@
 #include "camera.h"
 #include "hittables/hittable.h"
-#include "hittables/sphere.h"
-#include "materials/material.h"
+#include "materials/material.h" // NOLINT(misc-include-cleaner)
 #include "math/color.h"
-#include "math/interval.h"
 #include "math/ray.h"
 #include "math/vec3.h"
 #include "utils.h"
 #include <chrono>
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <thread>
@@ -29,7 +28,7 @@ void camera::render(const hittable &world, int n_threads) {
                   ? image_height // last thread eats the remainder
                   : rowsPerThread * (i + 1);
 
-    threads.emplace_back([&results, i, this, &world, start, end]() {
+    threads.emplace_back([&results, i, this, &world, start, end]() -> void {
       results[i] = render_thread(world, start, end);
     });
   }
@@ -56,14 +55,14 @@ void camera::render(const hittable &world, int n_threads) {
             << '\n';
 }
 
-std::vector<vec3> camera::render_thread(const hittable &world, int start,
-                                        int end) const {
+auto camera::render_thread(const hittable &world, int start, int end) const
+    -> std::vector<vec3> {
 
-  if (!is_initialized)
+  if (!is_initialized) {
     throw "Camera isn't initialized!";
+  }
 
   std::vector<vec3> result;
-  result.reserve((end - start) * image_width);
 
   // std::ofstream file("Render.ppm", std::ios::out);
 
@@ -90,7 +89,7 @@ std::vector<vec3> camera::render_thread(const hittable &world, int start,
 }
 
 void camera::initialize() {
-  image_height = int(image_width / aspect_ratio);
+  image_height = static_cast<int>(image_width / aspect_ratio);
   image_height = (image_height < 1) ? 1 : image_height;
 
   pixel_samples_scale = 1.0 / samples_per_pixel;
@@ -101,7 +100,8 @@ void camera::initialize() {
   auto theta = degrees_to_radians(vfov);
   auto h = std::tan(theta / 2);
   auto viewport_height = 2 * h * focus_dist;
-  auto viewport_width = viewport_height * (double(image_width) / image_height);
+  auto viewport_width =
+      viewport_height * (static_cast<double>(image_width) / image_height);
 
   // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
   w = unit_vector(lookfrom - lookat);
@@ -132,10 +132,11 @@ void camera::initialize() {
   is_initialized = true;
 }
 
-color camera::ray_color(const ray &r, int depth, const hittable &world) const {
+auto camera::ray_color(const ray &r, int depth, const hittable &world) const
+    -> color {
 
   if (depth <= 0) {
-    return color(0, 0, 0);
+    return {0, 0, 0};
   }
 
   hit_record rec;
@@ -143,9 +144,10 @@ color camera::ray_color(const ray &r, int depth, const hittable &world) const {
   if (world.hit(r, interval(0.001, infinity), rec)) {
     ray scattered;
     color attenuation;
-    if (rec.mat->scatter(r, rec, attenuation, scattered))
+    if (rec.mat->scatter(r, rec, attenuation, scattered)) {
       return attenuation * ray_color(scattered, depth - 1, world);
-    return color(0, 0, 0);
+    }
+    return {0, 0, 0};
   }
 
   vec3 unit_direction = unit_vector(r.direction());
@@ -153,7 +155,7 @@ color camera::ray_color(const ray &r, int depth, const hittable &world) const {
   return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
 }
 
-ray camera::get_ray(int i, int j) const {
+auto camera::get_ray(int i, int j) const -> ray {
   // Construct a camera ray originating from the origin and directed at randomly
   // sampled point around the pixel location i, j.
 
@@ -164,17 +166,17 @@ ray camera::get_ray(int i, int j) const {
   auto ray_origin = (defocus_angle <= 0) ? center : defocus_disk_sample();
   auto ray_direction = pixel_sample - ray_origin;
 
-  return ray(ray_origin, ray_direction);
+  return {ray_origin, ray_direction};
 }
 
-point3 camera::defocus_disk_sample() const {
+auto camera::defocus_disk_sample() const -> point3 {
   // Returns a random point in the camera defocus disk.
   auto p = random_in_unit_disk();
   return center + (p[0] * defocus_disk_u) + (p[1] * defocus_disk_v);
 }
 
-vec3 camera::sample_square() const {
+auto camera::sample_square() const -> vec3 {
   // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit
   // square.
-  return vec3(random_double() - 0.5, random_double() - 0.5, 0);
+  return {random_double() - 0.5, random_double() - 0.5, 0};
 }

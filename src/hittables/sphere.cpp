@@ -1,14 +1,20 @@
 #include "sphere.h"
+#include "../hittables/hittable.h"
+#include "../math/interval.h"
+#include "../math/ray.h"
+#include "../math/vec3.h"
+#include <cmath>
 
-bool sphere::hit(const ray &r, interval ray_t, hit_record &rec) const {
+auto sphere::hit(const ray &r, interval ray_t, hit_record &rec) const -> bool {
   vec3 oc = center - r.origin();
   auto a = r.direction().length_squared();
   auto h = dot(r.direction(), oc);
   auto c = oc.length_squared() - radius * radius;
 
   auto discriminant = h * h - a * c;
-  if (discriminant < 0)
+  if (discriminant < 0) {
     return false;
+}
 
   auto sqrtd = std::sqrt(discriminant);
 
@@ -16,8 +22,9 @@ bool sphere::hit(const ray &r, interval ray_t, hit_record &rec) const {
   auto root = (h - sqrtd) / a;
   if (!ray_t.surrounds(root)) {
     root = (h + sqrtd) / a;
-    if (!ray_t.surrounds(root))
+    if (!ray_t.surrounds(root)) {
       return false;
+}
   }
 
   rec.t = root;

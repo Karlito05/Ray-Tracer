@@ -9,4 +9,4 @@ using color = vec3;
 void write_colors(std::ostream &out, const std::vector<vec3> &colors, int width,
                   int height);
 
-double linear_to_gamma(double linear_component);
+auto linear_to_gamma(double linear_component) -> double;

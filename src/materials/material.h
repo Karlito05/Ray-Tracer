@@ -6,8 +6,8 @@ class material {
 public:
   virtual ~material() = default;
 
-  virtual bool scatter(const ray &r_in, const hit_record &rec,
-                       color &attenuation, ray &scattered) const {
+  virtual auto scatter(const ray &r_in, const hit_record &rec,
+                       color &attenuation, ray &scattered) const -> bool {
     return false;
   }
 
@@ -17,10 +17,10 @@ private:
 
 class lambertian : public material {
 public:
-  lambertian(const color &albedo) : albedo(albedo) {}
+  explicit lambertian(const color &albedo) : albedo(albedo) {}
 
-  bool scatter(const ray &r_in, const hit_record &rec, color &attenuation,
-               ray &scattered) const override;
+  auto scatter(const ray &r_in, const hit_record &rec, color &attenuation,
+               ray &scattered) const -> bool override;
 
 private:
   color albedo;
@@ -31,8 +31,8 @@ public:
   metal(const color &albedo, double fuzz)
       : albedo(albedo), fuzz(fuzz < 1 ? fuzz : 1) {}
 
-  bool scatter(const ray &r_in, const hit_record &rec, color &attenuation,
-               ray &scattered) const override;
+  auto scatter(const ray &r_in, const hit_record &rec, color &attenuation,
+               ray &scattered) const -> bool override;
 
 private:
   color albedo;
@@ -41,14 +41,15 @@ private:
 
 class dielectric : public material {
 public:
-  dielectric(double refraction_index) : refraction_index(refraction_index) {}
+  explicit dielectric(double refraction_index)
+      : refraction_index(refraction_index) {}
 
-  bool scatter(const ray &r_in, const hit_record &rec, color &attenuation,
-               ray &scattered) const override;
+  auto scatter(const ray &r_in, const hit_record &rec, color &attenuation,
+               ray &scattered) const -> bool override;
 
 private:
   // Refractive index in vacuum or air, or the ratio of the material's
   // refractive index over the refractive index of the enclosing media
   double refraction_index;
-  static double reflectance(double cosine, double refraction_index);
+  static auto reflectance(double cosine, double refraction_index) -> double;
 };

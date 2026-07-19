@@ -3,14 +3,14 @@
 
 class ray {
 public:
-  ray() {}
+  ray() = default;
   ray(const point3 &origin, const vec3 &direction)
       : orig(origin), dir(direction) {}
 
-  const point3 &origin() const { return orig; }
-  const vec3 &direction() const { return dir; }
+  [[nodiscard]] auto origin() const -> const point3 & { return orig; }
+  [[nodiscard]] auto direction() const -> const vec3 & { return dir; }
 
-  point3 at(double t) const;
+  [[nodiscard]] auto at(double t) const -> point3;
 
 private:
   point3 orig;

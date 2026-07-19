@@ -1,15 +1,19 @@
+#pragma once
+
+#include <utility>
 
 #include "hittable.h"
 
 class sphere : public hittable {
 public:
-  sphere(const point3 &center, double radius, shared_ptr<material> mat)
-      : center(center), radius(std::fmax(0, radius)), mat(mat) {}
+  sphere(const point3 &center, double radius, std::shared_ptr<material> mat)
+      : center(center), radius(std::fmax(0, radius)), mat(std::move(mat)) {}
 
-  bool hit(const ray &r, interval ray_t, hit_record &rec) const override;
+  auto hit(const ray &r, interval ray_t, hit_record &rec) const
+      -> bool override;
 
 private:
   point3 center;
   double radius;
-  shared_ptr<material> mat;
+  std::shared_ptr<material> mat;
 };

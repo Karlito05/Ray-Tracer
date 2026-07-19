@@ -2,4 +2,6 @@ Checks: >
   -*,
   misc-include-cleaner,
   bugprone-*,
-  modernize-*
+  modernize-*,
+  google-*,
+  -bugprone-easily-swappable-parameters

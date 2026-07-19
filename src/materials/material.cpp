@@ -1,18 +1,24 @@
 #include "material.h"
-bool lambertian::scatter(const ray &r_in, const hit_record &rec,
-                         color &attenuation, ray &scattered) const {
+#include "../hittables/hittable.h"
+#include "../math/color.h"
+#include "../math/ray.h"
+#include "../math/vec3.h"
+#include <cmath>
+auto lambertian::scatter(const ray &r_in, const hit_record &rec,
+                         color &attenuation, ray &scattered) const -> bool {
   auto scatter_direction = rec.normal + random_unit_vector();
 
-  if (scatter_direction.near_zero())
+  if (scatter_direction.near_zero()) {
     scatter_direction = rec.normal;
+}
 
   scattered = ray(rec.p, scatter_direction);
   attenuation = albedo;
   return true;
 }
 
-bool metal::scatter(const ray &r_in, const hit_record &rec, color &attenuation,
-                    ray &scattered) const {
+auto metal::scatter(const ray &r_in, const hit_record &rec, color &attenuation,
+                    ray &scattered) const -> bool {
   vec3 reflected = reflect(r_in.direction(), rec.normal);
   reflected = unit_vector(reflected) + (fuzz * random_unit_vector());
   scattered = ray(rec.p, reflected);
@@ -20,8 +26,8 @@ bool metal::scatter(const ray &r_in, const hit_record &rec, color &attenuation,
   return (dot(scattered.direction(), rec.normal) > 0);
 }
 
-bool dielectric::scatter(const ray &r_in, const hit_record &rec,
-                         color &attenuation, ray &scattered) const {
+auto dielectric::scatter(const ray &r_in, const hit_record &rec,
+                         color &attenuation, ray &scattered) const -> bool {
   attenuation = color(1.0, 1.0, 1.0);
   double ri = rec.front_face ? (1.0 / refraction_index) : refraction_index;
 
@@ -32,17 +38,18 @@ bool dielectric::scatter(const ray &r_in, const hit_record &rec,
   bool cannot_refract = ri * sin_theta > 1.0;
   vec3 direction;
 
-  if (cannot_refract)
+  if (cannot_refract) {
     direction = reflect(unit_direction, rec.normal);
-  else
+  } else {
     direction = refract(unit_direction, rec.normal, ri);
+}
 
   scattered = ray(rec.p, direction);
 
   return true;
 }
 
-double dielectric::reflectance(double cosine, double refraction_index) {
+auto dielectric::reflectance(double cosine, double refraction_index) -> double {
   // Use Schlick's approximation for reflectance.
   auto r0 = (1 - refraction_index) / (1 + refraction_index);
   r0 = r0 * r0;

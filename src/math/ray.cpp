@@ -1,3 +1,4 @@
 #include "ray.h"
+#include "vec3.h"
 
-point3 ray::at(double t) const { return orig + t * dir; }
+auto ray::at(double t) const -> point3 { return orig + t * dir; }
