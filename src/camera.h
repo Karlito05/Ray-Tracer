@@ -2,7 +2,6 @@
 
 #include "hittables/hittable.h"
 #include "math/color.h"
-#include "utils.h"
 
 class camera {
 
@@ -21,9 +20,10 @@ public:
   double focus_dist =
       10; // Distance from camera lookfrom point to plane of perfect focus
 
-  void render(const hittable &world);
+  void render(const hittable &world, int n_threads);
 
 private:
+  bool is_initialized = false;
   int image_height;           // Rendered image height
   point3 center;              // Camera center
   point3 pixel00_loc;         // Location of pixel 0, 0
@@ -34,6 +34,9 @@ private:
   vec3 defocus_disk_u;        // Defocus disk horizontal radius
   vec3 defocus_disk_v;        // Defocus disk vertical radius
 
+  std::vector<vec3> render_thread(const hittable &world, int start,
+                                  int end) const;
+
   void initialize();
 
   color ray_color(const ray &r, int depth, const hittable &world) const;
@@ -41,5 +44,6 @@ private:
   ray get_ray(int i, int j) const;
 
   vec3 sample_square() const;
+
   point3 defocus_disk_sample() const;
 };

@@ -1,4 +1,6 @@
 #include "vec3.h"
+#include "../utils.h"
+#include <cmath>
 
 vec3 vec3::operator-() const { return vec3(-e[0], -e[1], -e[2]); }
 

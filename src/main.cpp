@@ -2,6 +2,7 @@
 #include "hittables/hittable_list.h"
 #include "hittables/sphere.h"
 #include "materials/material.h"
+#include "math/color.h"
 #include "math/vec3.h"
 #include "utils.h"
 #include <GLFW/glfw3.h>
@@ -39,5 +40,5 @@ int main() {
   cam.defocus_angle = 10.0;
   cam.focus_dist = 3.4;
 
-  cam.render(world);
+  cam.render(world, 16);
 }

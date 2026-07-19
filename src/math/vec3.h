@@ -1,8 +1,6 @@
 #pragma once
 
-#include "../utils.h"
 #include <array>
-#include <cmath>
 #include <iostream>
 
 class vec3 {

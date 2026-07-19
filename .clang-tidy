@@ -1,0 +1,5 @@
+Checks: >
+  -*,
+  misc-include-cleaner,
+  bugprone-*,
+  modernize-*

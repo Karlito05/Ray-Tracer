@@ -1,32 +1,92 @@
 #include "camera.h"
+#include "hittables/hittable.h"
+#include "hittables/sphere.h"
 #include "materials/material.h"
+#include "math/color.h"
+#include "math/interval.h"
+#include "math/ray.h"
 #include "math/vec3.h"
+#include "utils.h"
+#include <chrono>
 #include <fstream>
-void camera::render(const hittable &world) {
-  camera::initialize();
+#include <iostream>
+#include <thread>
+#include <vector>
 
+void camera::render(const hittable &world, int n_threads) {
+  initialize();
+
+  std::vector<std::thread> threads;
+  std::vector<std::vector<vec3>> results(n_threads);
+
+  auto start = std::chrono::high_resolution_clock::now();
+
+  int rowsPerThread = image_height / n_threads;
+
+  for (int i = 0; i < n_threads; ++i) {
+    int start = rowsPerThread * i;
+    int end = (i == n_threads - 1)
+                  ? image_height // last thread eats the remainder
+                  : rowsPerThread * (i + 1);
+
+    threads.emplace_back([&results, i, this, &world, start, end]() {
+      results[i] = render_thread(world, start, end);
+    });
+  }
+
+  for (auto &t : threads) {
+    t.join(); // wait for each thread to finish
+  }
+
+  std::vector<vec3> colors{};
+
+  for (const auto &result : results) {
+    colors.append_range(result);
+  }
+
+  auto end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed = end - start;
+
+  // Write to a file
   std::ofstream file("Render.ppm", std::ios::out);
 
-  file << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+  write_colors(file, colors, image_width, image_height);
+  std::clog << "Time needed: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed)
+            << '\n';
+}
 
-  for (int j = 0; j < image_height; j++) {
+std::vector<vec3> camera::render_thread(const hittable &world, int start,
+                                        int end) const {
+
+  if (!is_initialized)
+    throw "Camera isn't initialized!";
+
+  std::vector<vec3> result;
+  result.reserve((end - start) * image_width);
+
+  // std::ofstream file("Render.ppm", std::ios::out);
+
+  // file << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+
+  for (int j = start; j < end; j++) {
 
     for (int i = 0; i < image_width; i++) {
-      std::clog << "\rScanlines remaining: " << (image_height - j)
-                << " Pixels till next scanline: " << (image_width - i) << ' '
-                << std::flush;
+      // std::clog << "\rScanlines remaining: " << (end - j)
+      //           << " Pixels till next scanline: " << (image_width - i) << ' '
+      //           << std::flush;
 
       color pixel_color(0, 0, 0);
       for (int sample = 0; sample < samples_per_pixel; sample++) {
         ray r = get_ray(i, j);
         pixel_color += ray_color(r, max_depth, world);
       }
-      write_color(file, pixel_samples_scale * pixel_color);
+      result.push_back(pixel_samples_scale * pixel_color);
     }
   }
 
-  std::clog
-      << "\rDone.                                                        \n";
+  std::clog << "Done.\n";
+  return result;
 }
 
 void camera::initialize() {
@@ -68,6 +128,8 @@ void camera::initialize() {
       focus_dist * std::tan(degrees_to_radians(defocus_angle / 2));
   defocus_disk_u = u * defocus_radius;
   defocus_disk_v = v * defocus_radius;
+
+  is_initialized = true;
 }
 
 color camera::ray_color(const ray &r, int depth, const hittable &world) const {
