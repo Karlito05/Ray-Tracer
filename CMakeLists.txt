@@ -22,6 +22,7 @@ target_sources(RayTracer
     src/hittables/hittable.cpp
     src/hittables/hittable_list.cpp
     src/hittables/sphere.cpp
+    src/hittables/triangle.cpp
 )
 
 # ---- Performance flags (Release only) ----

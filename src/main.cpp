@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "hittables/hittable_list.h"
 #include "hittables/sphere.h"
+#include "hittables/triangle.h"
 #include "materials/material.h"
 #include "math/color.h"
 #include "math/vec3.h"
@@ -12,7 +13,8 @@ auto main() -> int {
 
   std::cout << "Pick which scene you want to render:\n"
             << "[1] Material Demo\n"
-            << "[2] Titlescreen\n";
+            << "[2] Titlescreen\n"
+            << "[3] Triangle demo\n";
 
   int choice{};
   std::cin >> choice;
@@ -96,6 +98,18 @@ auto main() -> int {
 
     cam.defocus_angle = 0.6;
     cam.focus_dist = 10.0;
+
+    break;
+  }
+  case 3: {
+    auto material_trinagle = std::make_shared<lambertian>(color(0.5, 0.5, 0.5));
+
+    world.add(std::make_shared<triangle>(
+        std::array<point3, 3>{point3(0, 0, -1), point3(1, 0, -1),
+                              point3(0, 1, -1)},
+        material_trinagle));
+
+    cam.vfov = 120;
 
     break;
   }
