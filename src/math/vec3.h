@@ -15,6 +15,8 @@ public:
 
   vec3() : e{0, 0, 0} {}
   vec3(double e1, double e2, double e3) : e{e1, e2, e3} {}
+  explicit vec3(std::array<double, 3> a) : e{a[0], a[1], a[2]} {}
+  explicit vec3(std::array<float, 3> a) : e{a[0], a[1], a[2]} {}
 
   auto operator-() const -> vec3;
   auto operator+=(const vec3 &v) -> vec3 &;

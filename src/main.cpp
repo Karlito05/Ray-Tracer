@@ -6,6 +6,8 @@
 #include "math/color.h"
 #include "math/vec3.h"
 #include "utils.h"
+#include <array>
+#include <fstream>
 #include <iostream>
 #include <memory>
 
@@ -14,7 +16,8 @@ auto main() -> int {
   std::cout << "Pick which scene you want to render:\n"
             << "[1] Material Demo\n"
             << "[2] Titlescreen\n"
-            << "[3] Triangle demo\n";
+            << "[3] Triangle demo\n"
+            << "[4] Suzanne\n";
 
   int choice{};
   std::cin >> choice;
@@ -111,6 +114,52 @@ auto main() -> int {
 
     cam.vfov = 120;
 
+    break;
+  }
+  case 4: {
+    auto ground_material = std::make_shared<lambertian>(color(0.8, 0.8, 0));
+    world.add(make_shared<sphere>(point3(0, -1001, 0), 1000, ground_material));
+
+    auto triangle_material = std::make_shared<lambertian>(color(0.5, 0.5, 0.5));
+
+    std::ifstream file("Suzanne.stl", std::ios::binary);
+    if (!file) {
+      std::cerr << "Could not open file: Suzanne.stl";
+      return 1;
+    }
+
+    // Skip 80-byte header
+    file.seekg(80, std::ios::beg);
+
+    uint32_t triangleCount = 0;
+    file.read(reinterpret_cast<char *>(&triangleCount), sizeof(uint32_t));
+
+    if (!file) {
+      std::cerr << "File too small to contain a valid STL header";
+      return 1;
+    }
+
+    for (uint32_t i = 0; i < triangleCount; ++i) {
+      std::array<std::array<float, 3>, 3> points;
+      std::array<float, 3> normal;
+      file.read(reinterpret_cast<char *>(&normal), sizeof(float) * 3);
+      file.read(reinterpret_cast<char *>(&points[0]), sizeof(float) * 3);
+      file.read(reinterpret_cast<char *>(&points[1]), sizeof(float) * 3);
+      file.read(reinterpret_cast<char *>(&points[2]), sizeof(float) * 3);
+
+      uint16_t attributeByteCount = 0;
+      file.read(reinterpret_cast<char *>(&attributeByteCount),
+                sizeof(uint16_t));
+
+      world.add(std::make_shared<triangle>(
+          std::array<point3, 3>{point3(points[0]), point3(points[1]),
+                                point3(points[2])},
+          triangle_material));
+    }
+    cam.vfov = 40;
+
+    cam.lookfrom = vec3(0, 0, 5);
+    cam.lookat = vec3(0, 0, 0);
     break;
   }
   default: {
