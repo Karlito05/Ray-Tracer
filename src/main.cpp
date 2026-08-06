@@ -117,10 +117,10 @@ auto main() -> int {
     break;
   }
   case 4: {
-    auto ground_material = std::make_shared<lambertian>(color(0.8, 0.8, 0));
+    auto ground_material = std::make_shared<lambertian>(color(0.2, 0.2, 0.2));
     world.add(make_shared<sphere>(point3(0, -1001, 0), 1000, ground_material));
 
-    auto triangle_material = std::make_shared<lambertian>(color(0.5, 0.5, 0.5));
+    auto triangle_material = std::make_shared<metal>(color(0.4, 0.4, 0.5), 0);
 
     std::ifstream file("Suzanne.stl", std::ios::binary);
     if (!file) {
@@ -158,7 +158,7 @@ auto main() -> int {
     }
     cam.vfov = 40;
 
-    cam.lookfrom = vec3(0, 0, 5);
+    cam.lookfrom = vec3(2.5, 3, 3);
     cam.lookat = vec3(0, 0, 0);
     break;
   }

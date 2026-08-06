@@ -7,13 +7,14 @@
 
 auto triangle::hit(const ray &r, interval ray_t, hit_record &rec) const
     -> bool {
-  constexpr float epsilon = std::numeric_limits<double>::epsilon();
+  constexpr double epsilon = std::numeric_limits<double>::epsilon();
 
   vec3 edge1 = b - a;
   vec3 edge2 = c - a;
 
   // Backface culling, assuming CCW-wound triangles.
-  const vec3 normal = cross(edge1, edge2); // No need to normalize
+  const vec3 normal = cross(edge1, edge2);
+
   if (dot(normal, r.direction()) > 0) {
     return false;
   }
@@ -44,12 +45,12 @@ auto triangle::hit(const ray &r, interval ray_t, hit_record &rec) const
   // We compute t to find where on the ray the intersection is.
   double t = inv_det * dot(edge2, s_cross_e1);
 
-  if (t > epsilon) // Ray intersection
+  if (ray_t.surrounds(t)) // Ray intersection
   {
     rec.t = t;
     rec.p = r.at(rec.t);
 
-    rec.set_face_normal(r, normal);
+    rec.set_face_normal(r, unit_vector(normal));
     rec.mat = mat;
 
     return true;
