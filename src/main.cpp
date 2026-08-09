@@ -5,13 +5,111 @@
 #include "materials/material.h"
 #include "math/color.h"
 #include "math/vec3.h"
+#include "popl.h"
 #include "utils.h"
+#include <algorithm>
 #include <array>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
 
-auto main() -> int {
+auto main(int argc, char *argv[]) -> int {
+
+  popl::OptionParser op("Allowed options");
+  auto help_option = op.add<popl::Switch>("h", "help", "produce help message");
+  auto threads = op.add<popl::Value<int>>(
+      "t", "threads", "number of threads that should the ray tracer run on", 1);
+  auto width = op.add<popl::Value<int>>("w", "width",
+                                        "width of the resulting image", 800);
+  auto samples_per_pixel = op.add<popl::Value<int>>("s", "samples_per_pixel",
+                                                    "samples per pixel", 10);
+  auto max_depth = op.add<popl::Value<int>>(
+      "d", "depth", "maximal ammount of ray bounces", 50);
+  auto path = op.add<popl::Value<std::filesystem::path>>(
+      "p", "path", "a path to a STL file to render");
+  auto offset = op.add<popl::Value<int>>(
+      "o", "offset",
+      "set an offset for the camera distance from a custom object (only active "
+      "when using the path option)",
+      1);
+  auto fov = op.add<popl::Value<int>>(
+      "f", "fov",
+      "set the fov of the camera (only active when using the path option)", 90);
+
+  op.parse(argc, argv);
+
+  if (help_option->is_set()) {
+    std::cout << op << "\n";
+    return 0;
+  }
+
+  hittable_list world;
+
+  camera cam;
+
+  cam.aspect_ratio = 16.0 / 9.0;
+  cam.image_width = width->value();
+  cam.samples_per_pixel = samples_per_pixel->value();
+  cam.max_depth = max_depth->value();
+
+  if (path->is_set()) {
+
+    auto triangle_material = std::make_shared<lambertian>(color(0.4, 0.4, 0.5));
+
+    std::ifstream file(path->value(), std::ios::binary);
+    if (!file) {
+      std::cerr << "Could not open file: " << path->value() << '\n';
+      return 1;
+    }
+
+    // Skip 80-byte header
+    file.seekg(80, std::ios::beg);
+
+    uint32_t triangleCount = 0;
+    file.read(reinterpret_cast<char *>(&triangleCount), sizeof(uint32_t));
+
+    if (!file) {
+      std::cerr << "File too small to contain a valid STL header";
+      return 1;
+    }
+
+    auto max_X = 0.0;
+    auto max_Y = 0.0;
+    auto max_Z = 0.0;
+
+    for (uint32_t i = 0; i < triangleCount; ++i) {
+      std::array<std::array<float, 3>, 3> points;
+      std::array<float, 3> normal;
+      file.read(reinterpret_cast<char *>(&normal), sizeof(float) * 3);
+      file.read(reinterpret_cast<char *>(&points[0]), sizeof(float) * 3);
+      file.read(reinterpret_cast<char *>(&points[1]), sizeof(float) * 3);
+      file.read(reinterpret_cast<char *>(&points[2]), sizeof(float) * 3);
+
+      for (const auto &point : points) {
+        max_X = std::max(static_cast<double>(point[0]), max_X);
+        max_Y = std::max(static_cast<double>(point[1]), max_Y);
+        max_Z = std::max(static_cast<double>(point[2]), max_Z);
+      }
+
+      uint16_t attributeByteCount = 0;
+      file.read(reinterpret_cast<char *>(&attributeByteCount),
+                sizeof(uint16_t));
+
+      world.add(std::make_shared<triangle>(
+          std::array<point3, 3>{point3(points[0]), point3(points[1]),
+                                point3(points[2])},
+          triangle_material));
+    }
+    cam.vfov = fov->value();
+
+    cam.lookfrom = vec3(max_X + offset->value(), max_Y + offset->value(),
+                        max_Z + offset->value());
+    cam.lookat = vec3(0, 0, 0);
+
+    cam.render(world, threads->value());
+    return 0;
+  }
 
   std::cout << "Pick which scene you want to render:\n"
             << "[1] Material Demo\n"
@@ -21,15 +119,6 @@ auto main() -> int {
 
   int choice{};
   std::cin >> choice;
-
-  hittable_list world;
-
-  camera cam;
-
-  cam.aspect_ratio = 16.0 / 9.0;
-  cam.image_width = 2560;
-  cam.samples_per_pixel = 10;
-  cam.max_depth = 50;
 
   switch (choice) {
   case 1: {
@@ -120,7 +209,7 @@ auto main() -> int {
     auto ground_material = std::make_shared<lambertian>(color(0.2, 0.2, 0.2));
     world.add(make_shared<sphere>(point3(0, -1001, 0), 1000, ground_material));
 
-    auto triangle_material = std::make_shared<metal>(color(0.4, 0.4, 0.5), 0);
+    auto triangle_material = std::make_shared<lambertian>(color(0.4, 0.4, 0.5));
 
     std::ifstream file("Suzanne.stl", std::ios::binary);
     if (!file) {
@@ -170,5 +259,5 @@ auto main() -> int {
 
   std::clog << "Starting render. Please wait...\n";
 
-  cam.render(world, 16);
+  cam.render(world, threads->value());
 }
