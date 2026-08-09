@@ -6,6 +6,12 @@ A simple, multithreaded CPU ray tracer.
 
 </div>
 
+## Renders
+<p align="center">
+  <img src="./renders/Render-Cool.png" alt="Time Tracker timer view" width="100%" />
+  <img src="./renders/Render-Materials.png" alt="Time Tracker overview" width="100%" />
+</p>
+
 ## Features
 
 - Renders built-in demo scenes with spheres and triangles
