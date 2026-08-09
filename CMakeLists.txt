@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 4.0)
-project(RayTracer)
+project(RayTracer LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -25,15 +25,28 @@ target_sources(RayTracer
     src/hittables/triangle.cpp
 )
 
+if(WIN32)
+  target_compile_definitions(RayTracer PRIVATE WINDOWS NOMINMAX)
+endif()
+
 # ---- Performance flags (Release only) ----
-target_compile_options(RayTracer PRIVATE
-  $<$<CONFIG:Release>:-O3>
-  $<$<CONFIG:Release>:-march=native>
-  $<$<CONFIG:Release>:-mtune=native>
-  $<$<CONFIG:Release>:-funroll-loops>
-  $<$<CONFIG:Release>:-ffast-math>
-  $<$<CONFIG:Release>:-DNDEBUG>
-)
+if(NOT CMAKE_CROSSCOMPILING AND NOT WIN32)
+  target_compile_options(RayTracer PRIVATE
+    $<$<CONFIG:Release>:-O3>
+    $<$<CONFIG:Release>:-march=native>
+    $<$<CONFIG:Release>:-mtune=native>
+    $<$<CONFIG:Release>:-funroll-loops>
+    $<$<CONFIG:Release>:-ffast-math>
+    $<$<CONFIG:Release>:-DNDEBUG>
+  )
+else()
+  target_compile_options(RayTracer PRIVATE
+    $<$<CONFIG:Release>:-O3>
+    $<$<CONFIG:Release>:-funroll-loops>
+    $<$<CONFIG:Release>:-ffast-math>
+    $<$<CONFIG:Release>:-DNDEBUG>
+  )
+endif()
 
 # ---- Link-Time Optimization ----
 include(CheckIPOSupported)

@@ -34,6 +34,27 @@ cmake --build build
 
 This will produce the RayTracer executable in the build directory.
 
+### Cross-compiling for Windows
+
+If you have a MinGW-w64 toolchain installed, you can build a Windows executable from Linux with:
+
+```bash
+cmake -B build-windows \
+	-DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw-w64.cmake \
+	-DCMAKE_BUILD_TYPE=Release
+cmake --build build-windows
+```
+
+If your MinGW prefix is different, pass it through CMake:
+
+```bash
+cmake -B build-windows \
+	-DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw-w64.cmake \
+	-DMINGW_PREFIX=i686-w64-mingw32
+```
+
+The output will be a Windows `.exe` in the chosen build directory.
+
 ## Usage
 
 Run the program with:
@@ -84,5 +105,6 @@ If you are exporting from Blender or another 3D tool, make sure the export setti
 The rendered image is written to Render.ppm in the project root / working directory.
 
 ## Credits
+
 - Most of the concepts in this code if from a book called Ray [Tracing in a Weekend](https://raytracing.github.io/)
 - Also CLI parameters are parsed with a header library called [popl](https://github.com/badaix/popl)
