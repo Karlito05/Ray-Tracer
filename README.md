@@ -76,3 +76,7 @@ If you are exporting from Blender or another 3D tool, make sure the export setti
 ## Output
 
 The rendered image is written to Render.ppm in the project root / working directory.
+
+## Credits
+Most of the concepts in this code if from a book called Ray [Tracing in a Weekend](https://raytracing.github.io/)
+Also CLI parameters are parsed with a header library called [popl](https://github.com/badaix/popl)
