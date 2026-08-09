@@ -2,7 +2,7 @@
 
 # Ray Tracer
 
-A lightweight, multithreaded ray tracer that renders built-in scenes or imports STL meshes from disk.
+A simple, multithreaded CPU ray tracer.
 
 </div>
 
