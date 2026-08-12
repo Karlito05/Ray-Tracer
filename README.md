@@ -73,7 +73,7 @@ To render a mesh from an STL file:
 ./RayTracer -p model.stl
 ```
 
-### Possible options
+### Available options
 
 - -t, --threads: number of threads to use
 - -w, --width: output image width (height will be calculated always in the aspect ratio of 16:9)
