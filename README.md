@@ -22,6 +22,7 @@ A simple, multithreaded CPU ray tracer.
 ## Quickstart
 
 If you do not want to build from source, you can use the binaries provided in the GitHub Releases section for your platform.
+https://github.com/Karlito05/Ray-Tracer/releases/tag/latest
 
 ## Building from source
 
