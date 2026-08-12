@@ -16,12 +16,11 @@ A simple, multithreaded CPU ray tracer.
 
 - Renders built-in demo scenes with spheres and triangles
 - Loads STL files and renders them as triangle meshes
-- Writes the final image to Render.ppm
 - Supports multithreaded rendering for faster output
 
 ## Quickstart
 
-If you do not want to build from source, you can use the binaries provided in the GitHub [Releases](https://github.com/Karlito05/Ray-Tracer/releases/tag/latest) section for your platform.
+If you do not want to build from source, you can use the prebuilt binaries provided in the GitHub [Releases](https://github.com/Karlito05/Ray-Tracer/releases/tag/latest) section for your platform.
 
 ## Building from source
 
@@ -32,7 +31,7 @@ cmake -B build
 cmake --build build
 ```
 
-This will produce the RayTracer executable in the build directory.
+This will produce the RayTracer executable in the `build` directory.
 
 ### Cross-compiling for Windows
 
@@ -45,40 +44,39 @@ cmake -B build-windows \
 cmake --build build-windows
 ```
 
-If your MinGW prefix is different, pass it through CMake:
-
-```bash
-cmake -B build-windows \
-	-DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/mingw-w64.cmake \
-	-DMINGW_PREFIX=i686-w64-mingw32
-```
-
-The output will be a Windows `.exe` in the chosen build directory.
+The output will be a Windows `.exe` in the chosen `build-windows` directory.
 
 ## Usage
 
 Run the program with:
 
 ```bash
-./build/RayTracer --help
+./RayTracer
 ```
+
+Or with
+
+```bash
+./RayTracer --help
+```
+to display the help message
 
 ### Built-in scenes
 
-If you run the program without an STL file, it will prompt you to choose one of the built-in scenes.
+If you run the program without the -p parameter, it will prompt you to choose one of the built-in scenes.
 
 ### Rendering an STL file
 
 To render a mesh from an STL file:
 
 ```bash
-./build/RayTracer -p model.stl
+./RayTracer -p model.stl
 ```
 
-### Common options
+### Possible options
 
 - -t, --threads: number of threads to use
-- -w, --width: output image width
+- -w, --width: output image width (height will be calculated always in the aspect ratio of 16:9)
 - -s, --samples_per_pixel: antialiasing samples per pixel
 - -d, --depth: maximum ray bounce depth
 - -p, --path: path to an STL file
@@ -88,21 +86,21 @@ To render a mesh from an STL file:
 Example:
 
 ```bash
-./build/RayTracer -p model.stl -w 1600 -s 64 -d 50 -t 8 -f 60
+./RayTracer -p model.stl -w 1600 -s 64 -d 50 -t 8 -f 60
 ```
 
-## STL export note
+## How to export the STL file right
 
-Important: exported STL files must use the coordinate convention Up = Y and Forward = -Z. This renderer assumes that orientation when reading triangle data, so meshes exported with a different axis convention may appear rotated or misplaced.
+Exported STL files must use the coordinate convention Up = Y and Forward = -Z. This renderer assumes that orientation when reading triangle data, so meshes exported with a different axis convention may appear rotated or misplaced.
 
-If you are exporting from Blender or another 3D tool, make sure the export settings match:
+If you are exporting from Blender, make sure the export settings match:
 
 - Up: Y
 - Forward: -Z
 
 ## Output
 
-The rendered image is written to Render.ppm in the project root / working directory.
+The rendered image is written to Render.ppm in the working directory.
 
 ## Credits
 
